@@ -47,7 +47,7 @@ func testFetchCopyright() {
             // 2. Создаём экземпляр нашего сервиса, передавая ему клиент и API-ключ
             let service = CopyrightService(
                 client: client,
-                apikey: "fdb1aa1c-5f8c-443d-8a3e-f858ff369560" // !!! ЗАМЕНИТЕ НА СВОЙ РЕАЛЬНЫЙ КЛЮЧ !!!
+                apikey: "YOUR API KEY" // !!! ЗАМЕНИТЕ НА СВОЙ РЕАЛЬНЫЙ КЛЮЧ !!!
             )
             
             // 3. Вызываем метод сервиса

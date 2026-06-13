@@ -19,7 +19,9 @@ struct ContentView: View {
             // testFetchCopyright()
             // testFetchSchedualBetweenStations()
             // testGetStationSchedule()
-            testFetchRouteStations()
+            // testFetchRouteStations()
+            // testFetchNearestCity()
+            testFetchCarrierInfo()
         }
     }
 }

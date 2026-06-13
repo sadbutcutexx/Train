@@ -1,42 +1,39 @@
 //
-//  Untitled.swift
+//  CarrierInfoService.swift
 //  Train
 //
 
 import OpenAPIRuntime
 import OpenAPIURLSession
 
-typealias SchedualBetweenStations = Components.Schemas.Segments
+typealias CarrierInfo = Components.Schemas.CarrierResponse
 
-protocol SchedualBetweenStationsServiceProtocol {
-    
-    func getSchedualBetweenStations(from: String, to: String) async throws -> SchedualBetweenStations
+protocol CarrierInfoServiceProtocol {
+    func getCarrierInfo(code: String, system: String) async throws -> CarrierInfo
 }
 
-final class SchedualBetweenStationsService: SchedualBetweenStationsServiceProtocol {
-    
+final class CarrierInfoService: CarrierInfoServiceProtocol {
+
     private let client: Client
-    private let apikey: String
-    
+    private let apiKey: String
+
     init(client: Client, apikey: String) {
         self.client = client
-        self.apikey = apikey
+        self.apiKey = apikey
     }
-    
-    func getSchedualBetweenStations(from: String, to: String) async throws -> SchedualBetweenStations {
-        
-        let response = try await client.getSchedualBetweenStations(query: .init(
-            apikey: apikey,
-            from: from,
-            to: to
+
+    func getCarrierInfo(code: String, system: String) async throws -> CarrierInfo {
+        let response = try await client.getCarrierInfo(query: .init(
+            apikey: apiKey,
+            code: code,
+            system: system
         ))
-        
         return try response.ok.body.json
     }
 }
 
 // Функция для тестового вызова API
-func testFetchSchedualBetweenStations() {
+func testFetchCarrierInfo() {
     // Создаём Task для выполнения асинхронного кода
     Task {
         do {
@@ -49,24 +46,21 @@ func testFetchSchedualBetweenStations() {
             )
             
             // 2. Создаём экземпляр нашего сервиса, передавая ему клиент и API-ключ
-            let service = SchedualBetweenStationsService(
+            let service = CarrierInfoService(
                 client: client,
                 apikey: "YOUR API KEY" // !!! ЗАМЕНИТЕ НА СВОЙ РЕАЛЬНЫЙ КЛЮЧ !!!
             )
             
             // 3. Вызываем метод сервиса
-            print("Fetching schedule...")
-            let stations = try await service.getSchedualBetweenStations(
-                from: "c213",
-                to: "c14",
-            )
+            print("Fetching CarrierInfo...")
+            let stations = try await service.getCarrierInfo(code: "TK", system: "iata")
             
             // 4. Если всё успешно, печатаем результат в консоль
-            print("Successfully fetched schedule: \(stations)")
+            print("Successfully fetched CarrierInfo: \(stations)")
         } catch {
             // 5. Если произошла ошибка на любом из этапов (создание клиента, вызов сервиса, обработка ответа),
             //    она будет поймана здесь, и мы выведем её в консоль
-            print("Error fetching schedule: \(error)")
+            print("Error fetching CarrierInfo: \(error)")
             // В реальном приложении здесь должна быть логика обработки ошибок (показ алерта и т. д.)
         }
     }
