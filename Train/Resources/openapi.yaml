@@ -99,7 +99,7 @@ paths:
         - name: format
           in: query
           description: format
-          required: true
+          required: false
           schema:
             type: string
       responses:
@@ -462,6 +462,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Station'
+    Copyright:
+      type: object
+      properties:
+        copyright:
+          type: object
+          properties:
+            logo_vm:
+              type: string
+            logo_vd:
+              type: string
+            logo_hy:
+              type: string
+            logo_hd:
+              type: string
+            logo_vy:
+              type: string
+            logo_hm:
+              type: string
+            url:
+              type: string
+            text:
+              type: string
     Segments:
       type: object
       properties:
@@ -491,11 +513,9 @@ components:
                     description: Периодичность рейсов, например, "автобус раз в 10-15 минут".
                   begin_time:
                     type: string
-                    format: date-time
                     description: Время начала движения по нитке.
                   end_time:
                     type: string
-                    format: date-time
                     description: Время окончания движения по нитке.
               duration:
                 type: integer
@@ -514,12 +534,12 @@ components:
           $ref: '#/components/schemas/Station'
         departure:
           type: string
-          format: date-time
           description: Время отправления
         arrival:
           type: string
-          format: date-time
           description: Время прибытия
+        start_date:
+          type: string
         thread:
           $ref: '#/components/schemas/Thread'
         tickets_info:
@@ -622,11 +642,9 @@ components:
           description: Дни, когда рейс не выполняется
         arrival:
           type: string
-          format: date-time
           description: Время прибытия в формате ISO 8601
         departure:
           type: string
-          format: date-time
           description: Время отправления в формате ISO 8601
         thread:
           $ref: '#/components/schemas/Thread'
@@ -715,10 +733,8 @@ components:
       properties:
         arrival:
           type: string
-          format: date-time
         departure:
           type: string
-          format: date-time
         stop_time:
           type: integer
           description: Продолжительность остановки в секундах
@@ -762,11 +778,9 @@ components:
               description: Частота рейсов
             begin_time:
               type: string
-              format: date-time
               description: Время начала
             end_time:
               type: string
-              format: date-time
               description: Время окончания
     Directions:
       type: object
@@ -809,11 +823,9 @@ components:
           description: Периодичность рейсов
         begin_time:
           type: string
-          format: date-time
           description: Время начала рейсов
         end_time:
           type: string
-          format: date-time
           description: Время окончания рейсов
     ThreadStationsResponse:
       type: object

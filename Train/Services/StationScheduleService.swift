@@ -1,19 +1,19 @@
 //
-//  NearestStationsService.swift
+//  StationScheduleService.swift
 //  Train
 //
 
 import OpenAPIRuntime
 import OpenAPIURLSession
 
-typealias NearestStations = Components.Schemas.Stations
+typealias StationSchedule = Components.Schemas.ScheduleResponse
 
-protocol NearestStationsServiceProtocol {
+protocol StationScheduleServiceProtocol {
     
-    func getNearestStations(lat: Double, lng: Double, distance: Int) async throws -> NearestStations
+    func getStationSchedule(station: String) async throws -> StationSchedule
 }
 
-final class NearestStationsService: NearestStationsServiceProtocol {
+final class StationScheduleService: StationScheduleServiceProtocol {
     
     private let client: Client
     private let apikey: String
@@ -23,21 +23,19 @@ final class NearestStationsService: NearestStationsServiceProtocol {
         self.apikey = apikey
     }
     
-    func getNearestStations(lat: Double, lng: Double, distance: Int) async throws -> NearestStations {
+    func getStationSchedule(station: String) async throws -> StationSchedule {
         
-        let response = try await client.getNearestStations(query: .init(
+        let request = try await client.getStationSchedule(query: .init(
             apikey: apikey,
-            lat: lat,
-            lng: lng,
-            distance: distance
+            station: station
         ))
         
-        return try response.ok.body.json
+        return try request.ok.body.json
     }
 }
 
 // Функция для тестового вызова API
-func testFetchStations() {
+func testGetStationSchedule() {
     // Создаём Task для выполнения асинхронного кода
     Task {
         do {
@@ -50,26 +48,23 @@ func testFetchStations() {
             )
             
             // 2. Создаём экземпляр нашего сервиса, передавая ему клиент и API-ключ
-            let service = NearestStationsService(
+            let service = StationScheduleService(
                 client: client,
                 apikey: "fdb1aa1c-5f8c-443d-8a3e-f858ff369560" // !!! ЗАМЕНИТЕ НА СВОЙ РЕАЛЬНЫЙ КЛЮЧ !!!
             )
             
             // 3. Вызываем метод сервиса
-            print("Fetching stations...")
-            let stations = try await service.getNearestStations(
-                lat: 59.864177, // Пример координат
-                lng: 30.319163, // Пример координат
-                distance: 50    // Пример дистанции
-            )
+            print("Fetching stationSchedule...")
+            let stations = try await service.getStationSchedule(station: "s9600213")
             
             // 4. Если всё успешно, печатаем результат в консоль
-            print("Successfully fetched stations: \(stations)")
+            print("Successfully fetched stationSchedule: \(stations)")
         } catch {
             // 5. Если произошла ошибка на любом из этапов (создание клиента, вызов сервиса, обработка ответа),
             //    она будет поймана здесь, и мы выведем её в консоль
-            print("Error fetching stations: \(error)")
+            print("Error fetching stationSchedule: \(error)")
             // В реальном приложении здесь должна быть логика обработки ошибок (показ алерта и т. д.)
         }
     }
 }
+

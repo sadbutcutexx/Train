@@ -1,19 +1,19 @@
 //
-//  NearestStationsService.swift
+//  Untitled.swift
 //  Train
 //
 
 import OpenAPIRuntime
 import OpenAPIURLSession
 
-typealias NearestStations = Components.Schemas.Stations
+typealias SchedualBetweenStations = Components.Schemas.Segments
 
-protocol NearestStationsServiceProtocol {
+protocol SchedualBetweenStationsServiceProtocol {
     
-    func getNearestStations(lat: Double, lng: Double, distance: Int) async throws -> NearestStations
+    func getSchedualBetweenStations(from: String, to: String) async throws -> SchedualBetweenStations
 }
 
-final class NearestStationsService: NearestStationsServiceProtocol {
+final class SchedualBetweenStationsService: SchedualBetweenStationsServiceProtocol {
     
     private let client: Client
     private let apikey: String
@@ -23,13 +23,12 @@ final class NearestStationsService: NearestStationsServiceProtocol {
         self.apikey = apikey
     }
     
-    func getNearestStations(lat: Double, lng: Double, distance: Int) async throws -> NearestStations {
+    func getSchedualBetweenStations(from: String, to: String) async throws -> SchedualBetweenStations {
         
-        let response = try await client.getNearestStations(query: .init(
+        let response = try await client.getSchedualBetweenStations(query: .init(
             apikey: apikey,
-            lat: lat,
-            lng: lng,
-            distance: distance
+            from: from,
+            to: to
         ))
         
         return try response.ok.body.json
@@ -37,7 +36,7 @@ final class NearestStationsService: NearestStationsServiceProtocol {
 }
 
 // Функция для тестового вызова API
-func testFetchStations() {
+func testFetchSchedualBetweenStations() {
     // Создаём Task для выполнения асинхронного кода
     Task {
         do {
@@ -50,25 +49,24 @@ func testFetchStations() {
             )
             
             // 2. Создаём экземпляр нашего сервиса, передавая ему клиент и API-ключ
-            let service = NearestStationsService(
+            let service = SchedualBetweenStationsService(
                 client: client,
                 apikey: "fdb1aa1c-5f8c-443d-8a3e-f858ff369560" // !!! ЗАМЕНИТЕ НА СВОЙ РЕАЛЬНЫЙ КЛЮЧ !!!
             )
             
             // 3. Вызываем метод сервиса
-            print("Fetching stations...")
-            let stations = try await service.getNearestStations(
-                lat: 59.864177, // Пример координат
-                lng: 30.319163, // Пример координат
-                distance: 50    // Пример дистанции
+            print("Fetching schedule...")
+            let stations = try await service.getSchedualBetweenStations(
+                from: "c213",
+                to: "c14",
             )
             
             // 4. Если всё успешно, печатаем результат в консоль
-            print("Successfully fetched stations: \(stations)")
+            print("Successfully fetched schedule: \(stations)")
         } catch {
             // 5. Если произошла ошибка на любом из этапов (создание клиента, вызов сервиса, обработка ответа),
             //    она будет поймана здесь, и мы выведем её в консоль
-            print("Error fetching stations: \(error)")
+            print("Error fetching schedule: \(error)")
             // В реальном приложении здесь должна быть логика обработки ошибок (показ алерта и т. д.)
         }
     }

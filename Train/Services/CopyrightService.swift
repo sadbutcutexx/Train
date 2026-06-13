@@ -1,43 +1,38 @@
 //
-//  NearestStationsService.swift
+//  CopyrightService.swift
 //  Train
 //
 
 import OpenAPIRuntime
 import OpenAPIURLSession
 
-typealias NearestStations = Components.Schemas.Stations
+typealias Copyright = Components.Schemas.Copyright
 
-protocol NearestStationsServiceProtocol {
-    
-    func getNearestStations(lat: Double, lng: Double, distance: Int) async throws -> NearestStations
+protocol CopyrightServiceProtocol {
+    func getCopyright() async throws -> Copyright
 }
 
-final class NearestStationsService: NearestStationsServiceProtocol {
-    
+final class CopyrightService: CopyrightServiceProtocol {
+
     private let client: Client
-    private let apikey: String
-    
+    private let apiKey: String
+
     init(client: Client, apikey: String) {
         self.client = client
-        self.apikey = apikey
+        self.apiKey = apikey
     }
-    
-    func getNearestStations(lat: Double, lng: Double, distance: Int) async throws -> NearestStations {
-        
-        let response = try await client.getNearestStations(query: .init(
-            apikey: apikey,
-            lat: lat,
-            lng: lng,
-            distance: distance
+
+    func getCopyright() async throws -> Copyright {
+        let response = try await client.getCopyrightInfo(query: .init(
+            apikey: apiKey,
+            format: "json"
         ))
-        
         return try response.ok.body.json
     }
 }
 
 // Функция для тестового вызова API
-func testFetchStations() {
+func testFetchCopyright() {
     // Создаём Task для выполнения асинхронного кода
     Task {
         do {
@@ -50,25 +45,21 @@ func testFetchStations() {
             )
             
             // 2. Создаём экземпляр нашего сервиса, передавая ему клиент и API-ключ
-            let service = NearestStationsService(
+            let service = CopyrightService(
                 client: client,
                 apikey: "fdb1aa1c-5f8c-443d-8a3e-f858ff369560" // !!! ЗАМЕНИТЕ НА СВОЙ РЕАЛЬНЫЙ КЛЮЧ !!!
             )
             
             // 3. Вызываем метод сервиса
-            print("Fetching stations...")
-            let stations = try await service.getNearestStations(
-                lat: 59.864177, // Пример координат
-                lng: 30.319163, // Пример координат
-                distance: 50    // Пример дистанции
-            )
+            print("Fetching copyright...")
+            let stations = try await service.getCopyright()
             
             // 4. Если всё успешно, печатаем результат в консоль
-            print("Successfully fetched stations: \(stations)")
+            print("Successfully fetched copyright: \(stations)")
         } catch {
             // 5. Если произошла ошибка на любом из этапов (создание клиента, вызов сервиса, обработка ответа),
             //    она будет поймана здесь, и мы выведем её в консоль
-            print("Error fetching stations: \(error)")
+            print("Error fetching copyright: \(error)")
             // В реальном приложении здесь должна быть логика обработки ошибок (показ алерта и т. д.)
         }
     }

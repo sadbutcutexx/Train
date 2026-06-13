@@ -14,6 +14,13 @@ struct ContentView: View {
             Text("Hello, world!")
         }
         .padding()
+        .onAppear {
+            // testFetchStations()
+            // testFetchCopyright()
+            // testFetchSchedualBetweenStations()
+            // testGetStationSchedule()
+            testFetchRouteStations()
+        }
     }
 }
 
