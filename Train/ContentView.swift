@@ -21,7 +21,8 @@ struct ContentView: View {
             // testGetStationSchedule()
             // testFetchRouteStations()
             // testFetchNearestCity()
-            testFetchCarrierInfo()
+            // testFetchCarrierInfo()
+            testFetchAllStations()
         }
     }
 }

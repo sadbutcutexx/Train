@@ -446,7 +446,7 @@ paths:
             type: string
       responses:
         "200":
-          description: Успешный ответ
+          description: OK
           content:
             text/html; charset=utf-8:
               schema:

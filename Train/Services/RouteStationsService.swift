@@ -38,7 +38,7 @@ final class RouteTestsStationsService: RouteStationsService {
 func testFetchRouteStations() {
     // Создаём Task для выполнения асинхронного кода
     
-    let apikey = "YOUR API KEY"
+    let apikey = "6a0ee87c-787b-4ba2-aa12-6616eaf14e21"
     
     Task {
         do {

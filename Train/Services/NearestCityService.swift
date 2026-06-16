@@ -52,7 +52,7 @@ func testFetchNearestCity() {
             // 2. Создаём экземпляр нашего сервиса, передавая ему клиент и API-ключ
             let service = NearestStationsService(
                 client: client,
-                apikey: "YOUR API KEY" // !!! ЗАМЕНИТЕ НА СВОЙ РЕАЛЬНЫЙ КЛЮЧ !!!
+                apikey: "6a0ee87c-787b-4ba2-aa12-6616eaf14e21" // !!! ЗАМЕНИТЕ НА СВОЙ РЕАЛЬНЫЙ КЛЮЧ !!!
             )
             
             // 3. Вызываем метод сервиса
