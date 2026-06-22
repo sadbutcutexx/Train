@@ -2,8 +2,6 @@
 //  ContentView.swift
 //  Train
 //
-//  Created by Александр Гладков on 12.06.2026.
-//
 
 import SwiftUI
 
@@ -16,6 +14,16 @@ struct ContentView: View {
             Text("Hello, world!")
         }
         .padding()
+        .onAppear {
+            // testFetchStations()
+            // testFetchCopyright()
+            // testFetchSchedualBetweenStations()
+            // testGetStationSchedule()
+            // testFetchRouteStations()
+            // testFetchNearestCity()
+            // testFetchCarrierInfo()
+            testFetchAllStations()
+        }
     }
 }
 
