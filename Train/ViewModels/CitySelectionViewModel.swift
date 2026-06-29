@@ -19,23 +19,16 @@ final class CitySelectionViewModel: ObservableObject {
 
     func load() async {
 
-        guard cities.isEmpty else { return }
-
         isLoading = true
+        defer { isLoading = false }
 
         do {
-
             let response = try await service.getAllStations()
-
             cities = map(response)
-
         } catch {
-
             print(error)
-
+            cities = []
         }
-
-        isLoading = false
     }
 
     private func map(_ response: AllStations) -> [City] {
@@ -44,47 +37,33 @@ final class CitySelectionViewModel: ObservableObject {
             return []
         }
 
-        return countries
+        let regions = countries.flatMap { $0.regions ?? [] }
 
-            .flatMap { $0.regions ?? [] }
+        let settlements = regions.flatMap { $0.settlements ?? [] }
 
-            .flatMap { $0.settlements ?? [] }
+        let cities: [City] = settlements.compactMap { settlement in
 
-            .compactMap { settlement in
+            guard let name = settlement.title, !name.isEmpty else {
+                return nil
+            }
 
-                guard
-                    let name = settlement.title,
-                    !name.isEmpty
-                else {
+            let stations: [Station] = (settlement.stations ?? []).compactMap { station in
+                guard let title = station.title, !title.isEmpty else {
                     return nil
                 }
 
-                let stations = (settlement.stations ?? []).compactMap { station -> Station? in
-                    guard
-                        let title = station.title,
-                        !title.isEmpty
-                    else {
-                        return nil
-                    }
-
-                    return Station(
-                        title: title,
-                        code: station.codes?.yandex_code ?? ""
-                    )
-                }
-
-                return City(
-                    name: name,
-                    stations: stations
+                return Station(
+                    title: title,
+                    code: station.codes?.yandex_code ?? ""
                 )
             }
 
-            .sorted {
+            return City(
+                name: name,
+                stations: stations
+            )
+        }
 
-                $0.name < $1.name
-
-            }
-
+        return cities.sorted { $0.name < $1.name }
     }
-
 }

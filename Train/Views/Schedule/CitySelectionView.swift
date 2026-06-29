@@ -10,17 +10,14 @@ struct CitySelectionView: View {
     @Binding var selectedCity: String
     @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
-    
+
     @StateObject
     private var viewModel = CitySelectionViewModel(
         service: AppContainer.shared.allStationsService
     )
-    
-    private var filteredStations: [Station] {
 
-        guard let city = selectedCityModel else {
-            return []
-        }
+    private var filteredStations: [Station] {
+        guard let city = selectedCityModel else { return [] }
 
         if searchText.isEmpty {
             return city.stations
@@ -30,7 +27,7 @@ struct CitySelectionView: View {
             $0.title.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+
     private var filteredCities: [City] {
 
         if searchText.isEmpty {
@@ -41,17 +38,19 @@ struct CitySelectionView: View {
             $0.name.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
+
     var body: some View {
         ZStack {
             Color("Black")
                 .ignoresSafeArea()
+
             VStack(spacing: 0) {
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(.gray)
+
                     TextField("Введите запрос", text: $searchText)
-                    
+
                     if !searchText.isEmpty {
                         Button {
                             searchText = ""
@@ -62,7 +61,7 @@ struct CitySelectionView: View {
                     }
                 }
                 .padding(.horizontal, 12)
-                .frame(height: 36   )
+                .frame(height: 36)
                 .background(Color(.systemGray6))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal, 16)
@@ -70,59 +69,90 @@ struct CitySelectionView: View {
                 
                 ScrollView {
                     LazyVStack(spacing: 0) {
-                        if let city = selectedCityModel {
-                            ForEach(filteredStations) { station in
-                                Button {
-                                    if station.title.contains("(") {
-                                        selectedCity = station.title
-                                    } else {
-                                        selectedCity = "\(city.name) (\(station.title))"
-                                    }
-
-                                    dismiss()
-                                } label: {
-                                    HStack {
-                                        Text(station.title)
-                                            .font(.system(size: 17))
-                                            .foregroundStyle(.white)
-
-                                        Spacer()
-
-                                        Image(systemName: "chevron.right")
-                                            .foregroundStyle(.white)
-                                    }
-                                    .frame(maxWidth: .infinity, minHeight: 60)
-                                    .padding(.horizontal, 16)
-                                    .contentShape(Rectangle())
-                                }
-                                .buttonStyle(.plain)
+                        if viewModel.isLoading {
+                            VStack {
+                                Spacer()
+                                ProgressView()
+                                    .tint(.white)
+                                Spacer()
                             }
+                            .frame(maxWidth: .infinity, minHeight: 300)
+                        }
+                        else if selectedCityModel == nil {
 
-                        } else {
-                            ForEach(filteredCities) { city in
-                                Button {
-                                    selectedCityModel = city
-                                    searchText = ""
-                                } label: {
-                                    HStack {
-                                        Text(city.name)
-                                            .font(.system(size: 17))
-                                            .foregroundStyle(.white)
-                                            .font(.system(size: 17))
-                                            .foregroundStyle(.white)
-
-                                        Spacer()
-
-                                        Image(systemName: "chevron.right")
-                                            .foregroundStyle(.white)
-                                    }
-                                    .frame(maxWidth: .infinity, minHeight: 60)
-                                    .padding(.horizontal, 16)
-                                    .contentShape(Rectangle())
+                            if filteredCities.isEmpty {
+                                VStack {
+                                    Spacer()
+                                    Text("Город не найден")
+                                        .foregroundStyle(.white)
+                                        .font(.system(size: 24, weight: .bold))
+                                    Spacer()
                                 }
-                                .buttonStyle(.plain)
-                            }
+                                .frame(maxWidth: .infinity, minHeight: UIScreen.main.bounds.height * 0.6)
 
+                            } else {
+                                ForEach(filteredCities) { city in
+                                    Button {
+                                        selectedCityModel = city
+                                        searchText = ""
+                                    } label: {
+                                        HStack {
+                                            Text(city.name)
+                                                .font(.system(size: 17))
+                                                .foregroundStyle(.white)
+
+                                            Spacer()
+
+                                            Image(systemName: "chevron.right")
+                                                .foregroundStyle(.white)
+                                        }
+                                        .frame(maxWidth: .infinity, minHeight: 60)
+                                        .padding(.horizontal, 16)
+                                        .contentShape(Rectangle())
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                        }
+                        else {
+
+                            if filteredStations.isEmpty {
+                                VStack {
+                                    Spacer()
+                                    Text("Станция не найдена")
+                                        .foregroundStyle(.white)
+                                        .font(.system(size: 24, weight: .bold))
+                                    Spacer()
+                                }
+                                .frame(maxWidth: .infinity, minHeight: UIScreen.main.bounds.height * 0.6)
+
+                            } else {
+                                ForEach(filteredStations) { station in
+                                    Button {
+                                        if station.title.contains("(") {
+                                            selectedCity = station.title
+                                        } else if let city = selectedCityModel {
+                                            selectedCity = "\(city.name) (\(station.title))"
+                                        }
+                                        dismiss()
+                                    } label: {
+                                        HStack {
+                                            Text(station.title)
+                                                .font(.system(size: 17))
+                                                .foregroundStyle(.white)
+
+                                            Spacer()
+
+                                            Image(systemName: "chevron.right")
+                                                .foregroundStyle(.white)
+                                        }
+                                        .frame(maxWidth: .infinity, minHeight: 60)
+                                        .padding(.horizontal, 16)
+                                        .contentShape(Rectangle())
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
                         }
                     }
                 }
