@@ -2,8 +2,6 @@
 //  SearchCard.swift
 //  Train
 //
-//  Created by Александр Гладков on 28.06.2026.
-//
 
 import SwiftUI
 
