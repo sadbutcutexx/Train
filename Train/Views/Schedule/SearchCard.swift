@@ -6,18 +6,18 @@
 import SwiftUI
 
 struct SearchCard: View {
-    @Binding var fromCity: String
-    @Binding var toCity: String
+    @Binding var fromStation: SelectedStation?
+    @Binding var toStation: SelectedStation?
     
     var body: some View {
         HStack(spacing: 16) {
             VStack(spacing: 0) {
                 NavigationLink {
-                    CitySelectionView(selectedCity: $fromCity)
+                    CitySelectionView(selectedStation: $fromStation)
                 } label: {
                     HStack {
-                        Text(fromCity.isEmpty ? "Откуда" : fromCity)
-                            .foregroundStyle(fromCity.isEmpty ? .gray : .black)
+                        Text(fromStation?.title ?? "Откуда")
+                            .foregroundStyle(fromStation == nil ? .gray : .black)
                         Spacer()
                     }
                     .padding()
@@ -26,11 +26,11 @@ struct SearchCard: View {
                 Divider()
                 
                 NavigationLink {
-                    CitySelectionView(selectedCity: $toCity)
+                    CitySelectionView(selectedStation: $toStation)
                 } label: {
                     HStack {
-                        Text(toCity.isEmpty ? "Куда" : toCity)
-                            .foregroundStyle(fromCity.isEmpty ? .gray : .black)
+                        Text(toStation?.title ?? "Куда")
+                            .foregroundStyle(toStation == nil ? .gray : .black)
                         Spacer()
                     }
                     .padding()
@@ -40,7 +40,7 @@ struct SearchCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 20))
             
             Button {
-                swap(&fromCity, &toCity)
+                swap(&fromStation, &toStation)
             } label: {
                 Image("ChangeButton")
                     .frame(width: 36, height: 36)
@@ -56,7 +56,7 @@ struct SearchCard: View {
 
 #Preview {
     SearchCard(
-            fromCity: .constant(""),
-            toCity: .constant("")
-        )
+        fromStation: .constant(nil),
+        toStation: .constant(nil)
+    )
 }

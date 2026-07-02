@@ -22,8 +22,6 @@ struct MainView: View {
                 }
                 .tag(1)
         }
-        .toolbarBackground(.visible, for: .tabBar)
-        .toolbarBackground(.orange, for: .tabBar)
     }
 }
 

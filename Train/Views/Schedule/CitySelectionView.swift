@@ -7,7 +7,7 @@ import SwiftUI
 
 struct CitySelectionView: View {
     @State private var selectedCityModel: City?
-    @Binding var selectedCity: String
+    @Binding var selectedStation: SelectedStation?
     @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
 
@@ -129,11 +129,15 @@ struct CitySelectionView: View {
                             } else {
                                 ForEach(filteredStations) { station in
                                     Button {
-                                        if station.title.contains("(") {
-                                            selectedCity = station.title
-                                        } else if let city = selectedCityModel {
-                                            selectedCity = "\(city.name) (\(station.title))"
-                                        }
+                                        guard let city = selectedCityModel else { return }
+
+                                        selectedStation = SelectedStation(
+                                            title: station.title.contains("(")
+                                                ? station.title
+                                                : "\(city.name) (\(station.title))",
+                                            code: station.code
+                                        )
+
                                         dismiss()
                                     } label: {
                                         HStack {
@@ -184,5 +188,5 @@ struct CitySelectionView: View {
 }
 
 #Preview {
-    CitySelectionView(selectedCity: .constant(""))
+    CitySelectionView(selectedStation: .constant(nil))
 }

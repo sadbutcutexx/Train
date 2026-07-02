@@ -12,6 +12,7 @@ final class AppContainer {
     static let shared = AppContainer()
 
     let allStationsService: AllStationsServiceProtocol
+    let schedualBetweenStationsService: SchedualBetweenStationsServiceProtocol
 
     private init() {
 
@@ -21,6 +22,11 @@ final class AppContainer {
         )
 
         allStationsService = AllStationsService(
+            client: client,
+            apikey: "6a0ee87c-787b-4ba2-aa12-6616eaf14e21"
+        )
+        
+        schedualBetweenStationsService = SchedualBetweenStationsService(
             client: client,
             apikey: "6a0ee87c-787b-4ba2-aa12-6616eaf14e21"
         )

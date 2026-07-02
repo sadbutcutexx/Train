@@ -6,8 +6,8 @@
 import SwiftUI
 
 struct ScheduleView: View {
-    @State private var fromCity = ""
-    @State private var toCity = ""
+    @State private var fromStation: SelectedStation?
+    @State private var toStation: SelectedStation?
     
     var body: some View {
         NavigationStack {
@@ -18,26 +18,24 @@ struct ScheduleView: View {
                     StoriesView()
                         .padding(.bottom, 44)
                     SearchCard(
-                        fromCity: $fromCity,
-                        toCity: $toCity
+                        fromStation: $fromStation,
+                        toStation: $toStation
                     )
                     
-                    if !fromCity.isEmpty && !toCity.isEmpty {
+                    if let fromStation, let toStation {
                         NavigationLink {
                             RouteSelectionView(
-                                fromCity: fromCity,
-                                toCity: toCity
+                                fromStation: fromStation,
+                                toStation: toStation
                             )
                         } label: {
                             Text("Найти")
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 55)
                                 .background(Color("Blue"))
-                                .foregroundColor(.white)
+                                .foregroundStyle(.white)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                                 .font(.system(size: 17, weight: .bold))
-                                .padding(.leading, 96.5)
-                                .padding(.trailing, 96.5)
                         }
                     }
                     Spacer()
