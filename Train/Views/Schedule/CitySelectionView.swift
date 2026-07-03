@@ -135,7 +135,8 @@ struct CitySelectionView: View {
                                             title: station.title.contains("(")
                                                 ? station.title
                                                 : "\(city.name) (\(station.title))",
-                                            code: station.code
+                                            code: station.code,
+                                            cityCode: city.code
                                         )
 
                                         dismiss()

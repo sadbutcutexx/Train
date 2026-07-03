@@ -6,22 +6,28 @@
 import SwiftUI
 
 struct ScheduleView: View {
+
     @State private var fromStation: SelectedStation?
     @State private var toStation: SelectedStation?
-    
+
+    private let service = AppContainer.shared.schedualBetweenStationsService
+
     var body: some View {
         NavigationStack {
             ZStack {
                 Color("Black")
                     .ignoresSafeArea()
+
                 VStack(alignment: .leading, spacing: 24) {
+
                     StoriesView()
                         .padding(.bottom, 44)
+
                     SearchCard(
                         fromStation: $fromStation,
                         toStation: $toStation
                     )
-                    
+
                     if let fromStation, let toStation {
                         NavigationLink {
                             RouteSelectionView(
@@ -38,6 +44,7 @@ struct ScheduleView: View {
                                 .font(.system(size: 17, weight: .bold))
                         }
                     }
+
                     Spacer()
                 }
                 .padding(.horizontal, 16)
@@ -48,5 +55,4 @@ struct ScheduleView: View {
 }
 
 #Preview {
-    ScheduleView()
 }

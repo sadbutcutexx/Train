@@ -5,6 +5,7 @@
 
 import OpenAPIRuntime
 import OpenAPIURLSession
+import Foundation
 
 typealias SchedualBetweenStations = Components.Schemas.Segments
 
@@ -24,14 +25,20 @@ final class SchedualBetweenStationsService: SchedualBetweenStationsServiceProtoc
     }
     
     func getSchedualBetweenStations(from: String, to: String) async throws -> SchedualBetweenStations {
-        
-        let response = try await client.getSchedualBetweenStations(query: .init(
-            apikey: apikey,
-            from: from,
-            to: to,
-            transfers: true
-        ))
-        
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+
+        let response = try await client.getSchedualBetweenStations(
+            query: .init(
+                apikey: apikey,
+                from: from,
+                to: to,
+                date: formatter.string(from: Date()),
+                transport_types: "train"
+            )
+        )
+
         return try response.ok.body.json
     }
 }

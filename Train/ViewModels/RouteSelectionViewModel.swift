@@ -26,14 +26,32 @@ final class RouteSelectionViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            let response = try await service.getSchedualBetweenStations(from: from, to: to)
+            let response = try await service.getSchedualBetweenStations(
+                from: from,
+                to: to
+            )
 
-            // 👇 ВОТ СЮДА ДОБАВЬ
-            print("RAW RESPONSE:", response)
+            let segments = response.segments ?? []
 
-            print("Segments:", response.segments?.count ?? 0)
+            print("RAW segments:", segments.count)
 
-            routes = response.segments ?? []
+            routes = segments.filter { segment in
+
+                guard let fromStation = segment.from,
+                      let toStation = segment.to else {
+                    return false
+                }
+
+                let fromMatch =
+                    fromStation.codes?.yandex_code == from
+
+                let toMatch =
+                    toStation.codes?.yandex_code == to
+
+                return fromMatch && toMatch
+            }
+
+            print("FILTERED routes:", routes.count)
 
         } catch {
             print("ERROR:", error)

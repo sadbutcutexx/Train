@@ -5,7 +5,8 @@
 
 import Foundation
 
-struct SelectedStation: Equatable {
+struct SelectedStation {
     let title: String
-    let code: String
+    let code: String        // код станции
+    let cityCode: String    // код города
 }

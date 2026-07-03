@@ -6,70 +6,67 @@
 import SwiftUI
 
 struct RouteSelectionView: View {
-    
-    @StateObject var viewModel = RouteSelectionViewModel(
-        service: AppContainer.shared.schedualBetweenStationsService
-    )
-    
-    @Environment(\.dismiss) var dismiss
 
     let fromStation: SelectedStation
     let toStation: SelectedStation
 
+    @StateObject private var viewModel: RouteSelectionViewModel
+
+    init(fromStation: SelectedStation, toStation: SelectedStation) {
+        self.fromStation = fromStation
+        self.toStation = toStation
+
+        _viewModel = StateObject(
+            wrappedValue: RouteSelectionViewModel(
+                service: AppContainer.shared.schedualBetweenStationsService
+            )
+        )
+    }
+
     var body: some View {
         ZStack {
-            Color("Black")
-                .ignoresSafeArea()
+            Color("Black").ignoresSafeArea()
 
-            VStack {
+            VStack(spacing: 12) {
 
-                Text("\(fromStation.title) → \(toStation.title)")
-                    .font(.title2.bold())
-                    .foregroundStyle(.white)
+                // Header (как ты просил — сверху станции)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("\(fromStation.title)")
+                    Text("↓")
+                        .opacity(0.6)
+                    Text("\(toStation.title)")
+                }
+                .foregroundStyle(.white)
+                .font(.system(size: 18, weight: .semibold))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
 
                 if viewModel.isLoading {
-
-                    ProgressView()
-                        .tint(.white)
-
+                    Spacer()
+                    ProgressView().tint(.white)
+                    Spacer()
                 } else {
-
-                    Text("Найдено \(viewModel.routes.count) маршрутов")
-                        .foregroundStyle(.white)
-                }
-            }
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.title2)
-                        .foregroundStyle(.white)
+                    ScrollView {
+                        VStack(spacing: 12) {
+                            ForEach(viewModel.routes, id: \.self) { segment in
+                                RouteCard(segment: segment)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.top, 12)
+                    }
                 }
             }
         }
         .task {
             await viewModel.load(
-                from: fromStation.code,
-                to: toStation.code
+                from: fromStation.cityCode,
+                to: toStation.cityCode
             )
         }
     }
 }
 
 #Preview {
-    RouteSelectionView(
-        fromStation: SelectedStation(
-            title: "Москва (Ярославский вокзал)",
-            code: "s2000001"
-        ),
-        toStation: SelectedStation(
-            title: "Санкт-Петербург (Московский вокзал)",
-            code: "s9602498"
-        )
-    )
 }
