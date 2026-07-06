@@ -28,17 +28,29 @@ final class SchedualBetweenStationsService: SchedualBetweenStationsServiceProtoc
 
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
+        
+        let dateString = formatter.string(from: Date())
+
+        print("🔍 API REQUEST:")
+        print("  from: \(from)")
+        print("  to: \(to)")
+        print("  date: \(dateString)")
+        print("  transport_types: train")
 
         let response = try await client.getSchedualBetweenStations(
             query: .init(
                 apikey: apikey,
                 from: from,
                 to: to,
-                date: formatter.string(from: Date()),
+                date: dateString,
                 transport_types: "train"
             )
         )
 
-        return try response.ok.body.json
+        let result = try response.ok.body.json
+        
+        print("📦 API RESPONSE: \(result.segments?.count ?? 0) segments")
+
+        return result
     }
 }

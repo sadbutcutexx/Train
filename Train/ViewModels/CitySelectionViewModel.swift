@@ -67,6 +67,8 @@ final class CitySelectionViewModel: ObservableObject {
                         return nil
                     }
 
+                    print("  СТАНЦИЯ: \(title) | КОД: \(code)")
+
                     return Station(
                         title: title,
                         code: code

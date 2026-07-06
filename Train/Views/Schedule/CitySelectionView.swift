@@ -131,10 +131,28 @@ struct CitySelectionView: View {
                                     Button {
                                         guard let city = selectedCityModel else { return }
 
+                                        let displayTitle: String
+                                        if station.title.contains("(") {
+                                            displayTitle = station.title
+                                        } else {
+                                            displayTitle = "\(city.name) (\(station.title))"
+                                        }
+
+                                        let cleanStationTitle: String
+                                        if let range = station.title.range(of: "(") {
+                                            let afterParen = station.title[range.upperBound...]
+                                            if let endRange = afterParen.range(of: ")") {
+                                                cleanStationTitle = String(afterParen[..<endRange.lowerBound])
+                                            } else {
+                                                cleanStationTitle = station.title
+                                            }
+                                        } else {
+                                            cleanStationTitle = station.title
+                                        }
+
                                         selectedStation = SelectedStation(
-                                            title: station.title.contains("(")
-                                                ? station.title
-                                                : "\(city.name) (\(station.title))",
+                                            title: displayTitle,
+                                            stationTitle: cleanStationTitle,
                                             code: station.code,
                                             cityCode: city.code
                                         )
