@@ -15,7 +15,7 @@ struct ScheduleView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color("Black")
+                Color("BackgroundColor")
                     .ignoresSafeArea()
 
                 VStack(alignment: .leading, spacing: 24) {
@@ -39,7 +39,7 @@ struct ScheduleView: View {
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 55)
                                 .background(Color("Blue"))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Color("TextColor"))
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                                 .font(.system(size: 17, weight: .bold))
                         }

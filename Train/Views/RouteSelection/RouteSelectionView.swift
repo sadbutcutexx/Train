@@ -11,6 +11,9 @@ struct RouteSelectionView: View {
     let toStation: SelectedStation
 
     @StateObject private var viewModel: RouteSelectionViewModel
+    @State private var showFilterSheet = false
+    @State private var filters = RouteFilters()
+    @Environment(\.dismiss) private var dismiss
 
     init(fromStation: SelectedStation, toStation: SelectedStation) {
         self.fromStation = fromStation
@@ -22,16 +25,46 @@ struct RouteSelectionView: View {
             )
         )
     }
+    
+    private var filteredRoutes: [Components.Schemas.Segment] {
+        let baseRoutes = viewModel.showingAlternatives ? viewModel.alternativeRoutes : viewModel.routes
+        
+        return baseRoutes.filter { segment in
+            guard let departureStr = segment.departure,
+                  let departureDate = ISO8601DateFormatter().date(from: departureStr) else {
+                return true
+            }
+            
+            let calendar = Calendar.current
+            let hour = calendar.component(.hour, from: departureDate)
+            
+            var matchesTime = false
+            if filters.morningSelected && hour >= 6 && hour < 12 {
+                matchesTime = true
+            }
+            if filters.daySelected && hour >= 12 && hour < 18 {
+                matchesTime = true
+            }
+            if filters.eveningSelected && hour >= 18 && hour < 24 {
+                matchesTime = true
+            }
+            if filters.nightSelected && (hour >= 0 && hour < 6) {
+                matchesTime = true
+            }
+            
+            return matchesTime
+        }
+    }
 
     var body: some View {
         ZStack {
-            Color("Black").ignoresSafeArea()
+            Color("BackgroundColor").ignoresSafeArea()
 
             VStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("\(fromStation.title) → \(toStation.title)")
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color("TextColor"))
                         .lineLimit(3)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -42,22 +75,22 @@ struct RouteSelectionView: View {
 
                 if viewModel.isLoading {
                     Spacer()
-                    ProgressView().tint(.white)
+                    ProgressView().tint(Color("TextColor"))
                     Spacer()
                 } else if viewModel.routes.isEmpty && viewModel.alternativeRoutes.isEmpty {
                     Spacer()
                     VStack(spacing: 12) {
                         Image(systemName: "exclamationmark.triangle")
                             .font(.system(size: 48))
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(Color("TextColor").opacity(0.7))
                         
                         Text("Рейсы не найдены")
                             .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color("TextColor"))
                         
                         Text("Попробуйте выбрать другие станции")
                             .font(.system(size: 14))
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(Color("TextColor").opacity(0.7))
                     }
                     Spacer()
                 } else if viewModel.routes.isEmpty && !viewModel.alternativeRoutes.isEmpty {
@@ -65,15 +98,15 @@ struct RouteSelectionView: View {
                     VStack(spacing: 16) {
                         Image(systemName: "arrow.triangle.branch")
                             .font(.system(size: 48))
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(Color("TextColor").opacity(0.7))
                         
                         Text("Нет прямых рейсов")
                             .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color("TextColor"))
                         
                         Text("С выбранных станций нет рейсов.\nПоезда отправляются с других станций в этих городах.")
                             .font(.system(size: 14))
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(Color("TextColor").opacity(0.7))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 32)
                         
@@ -82,7 +115,7 @@ struct RouteSelectionView: View {
                         } label: {
                             Text("Показать альтернативные маршруты (\(viewModel.alternativeRoutes.count))")
                                 .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Color("TextColor"))
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 12)
                                 .background(Color.blue)
@@ -92,47 +125,64 @@ struct RouteSelectionView: View {
                     }
                     Spacer()
                 } else {
-                    ScrollView {
-                        VStack(spacing: 12) {
-                            let displayedRoutes = viewModel.showingAlternatives ? viewModel.alternativeRoutes : viewModel.routes
-                            
-                            if viewModel.showingAlternatives {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    HStack(spacing: 8) {
-                                        Image(systemName: "info.circle.fill")
-                                            .foregroundStyle(.blue)
-                                        Text("Альтернативные маршруты")
-                                            .font(.system(size: 16, weight: .semibold))
-                                            .foregroundStyle(.white)
+                    ZStack(alignment: .bottom) {
+                        ScrollView {
+                            VStack(spacing: 12) {
+                                let displayedRoutes = filteredRoutes
+                                
+                                if viewModel.showingAlternatives {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        HStack(spacing: 8) {
+                                            Image(systemName: "info.circle.fill")
+                                                .foregroundStyle(.blue)
+                                            Text("Альтернативные маршруты")
+                                                .font(.system(size: 16, weight: .semibold))
+                                                .foregroundStyle(Color("TextColor"))
+                                        }
+                                        
+                                        Text("Поезда отправляются с других станций в выбранных городах")
+                                            .font(.system(size: 13))
+                                            .foregroundStyle(Color("TextColor").opacity(0.7))
                                     }
-                                    
-                                    Text("Поезда отправляются с других станций в выбранных городах")
-                                        .font(.system(size: 13))
-                                        .foregroundStyle(.white.opacity(0.7))
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 12)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .background(Color.blue.opacity(0.15))
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
                                 }
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(Color.blue.opacity(0.15))
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                
+                                if displayedRoutes.isEmpty {
+                                    VStack(spacing: 12) {
+                                        Image(systemName: "line.3.horizontal.decrease.circle")
+                                            .font(.system(size: 48))
+                                            .foregroundStyle(Color("TextColor").opacity(0.7))
+                                        
+                                        Text("Нет рейсов по выбранным фильтрам")
+                                            .font(.system(size: 17, weight: .semibold))
+                                            .foregroundStyle(Color("TextColor"))
+                                            .multilineTextAlignment(.center)
+                                        
+                                        Text("Попробуйте изменить параметры поиска")
+                                            .font(.system(size: 14))
+                                            .foregroundStyle(Color("TextColor").opacity(0.7))
+                                    }
+                                    .padding(.vertical, 60)
+                                } else {
+                                    ForEach(displayedRoutes, id: \.self) { segment in
+                                        RouteCard(segment: segment)
+                                    }
+                                }
                             }
-                            
-                            ForEach(displayedRoutes, id: \.self) { segment in
-                                RouteCard(segment: segment)
-                            }
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 100)
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 100)
-                    }
-                    
-                    VStack(spacing: 0) {
-                        Spacer()
                         
                         Button {
+                            showFilterSheet = true
                         } label: {
                             Text("Уточнить время")
                                 .font(.system(size: 18, weight: .semibold))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Color("TextColor"))
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 56)
                                 .background(Color.blue)
@@ -141,17 +191,22 @@ struct RouteSelectionView: View {
                         .padding(.horizontal, 16)
                         .padding(.bottom, 20)
                     }
-                    .frame(maxHeight: .infinity, alignment: .bottom)
                 }
             }
         }
+        .sheet(isPresented: $showFilterSheet) {
+            RouteFilterView(filters: $filters)
+        }
+        .toolbarBackground(Color("BackgroundColor"), for: .navigationBar)
+        .toolbar(.hidden, for: .tabBar)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
+                    dismiss()
                 } label: {
                     Image(systemName: "chevron.left")
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color("TextColor"))
                         .font(.system(size: 20, weight: .semibold))
                 }
             }

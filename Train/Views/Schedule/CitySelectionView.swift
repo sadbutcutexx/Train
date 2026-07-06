@@ -41,7 +41,7 @@ struct CitySelectionView: View {
 
     var body: some View {
         ZStack {
-            Color("Black")
+            Color("BackgroundColor")
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
@@ -73,7 +73,7 @@ struct CitySelectionView: View {
                             VStack {
                                 Spacer()
                                 ProgressView()
-                                    .tint(.white)
+                                    .tint(Color("TextColor"))
                                 Spacer()
                             }
                             .frame(maxWidth: .infinity, minHeight: 300)
@@ -84,7 +84,7 @@ struct CitySelectionView: View {
                                 VStack {
                                     Spacer()
                                     Text("Город не найден")
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(Color("TextColor"))
                                         .font(.system(size: 24, weight: .bold))
                                     Spacer()
                                 }
@@ -99,12 +99,12 @@ struct CitySelectionView: View {
                                         HStack {
                                             Text(city.name)
                                                 .font(.system(size: 17))
-                                                .foregroundStyle(.white)
+                                                .foregroundStyle(Color("TextColor"))
 
                                             Spacer()
 
                                             Image(systemName: "chevron.right")
-                                                .foregroundStyle(.white)
+                                                .foregroundStyle(Color("TextColor"))
                                         }
                                         .frame(maxWidth: .infinity, minHeight: 60)
                                         .padding(.horizontal, 16)
@@ -120,7 +120,7 @@ struct CitySelectionView: View {
                                 VStack {
                                     Spacer()
                                     Text("Станция не найдена")
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(Color("TextColor"))
                                         .font(.system(size: 24, weight: .bold))
                                     Spacer()
                                 }
@@ -162,12 +162,12 @@ struct CitySelectionView: View {
                                         HStack {
                                             Text(station.title)
                                                 .font(.system(size: 17))
-                                                .foregroundStyle(.white)
+                                                .foregroundStyle(Color("TextColor"))
 
                                             Spacer()
 
                                             Image(systemName: "chevron.right")
-                                                .foregroundStyle(.white)
+                                                .foregroundStyle(Color("TextColor"))
                                         }
                                         .frame(maxWidth: .infinity, minHeight: 60)
                                         .padding(.horizontal, 16)
@@ -184,6 +184,8 @@ struct CitySelectionView: View {
         .navigationTitle(selectedCityModel?.name ?? "Выбор города")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
+        .toolbarBackground(Color("BackgroundColor"), for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
@@ -196,7 +198,7 @@ struct CitySelectionView: View {
                 } label: {
                     Image(systemName: "chevron.left")
                         .font(.title2)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color("TextColor"))
                 }
             }
         }

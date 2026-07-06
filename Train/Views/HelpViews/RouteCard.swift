@@ -16,6 +16,31 @@ struct RouteCard: View {
     private var trainTitle: String {
         segment.thread?.title ?? ""
     }
+    
+    private var transferInfo: String? {
+        // Проверяем название маршрута (thread.title), которое может содержать информацию о пересадках
+        // Например: "Москва — Кострома — Санкт-Петербург"
+        if let title = segment.thread?.title, !title.isEmpty {
+            // Разбираем по разделителю "—" или "-"
+            let cities = title.components(separatedBy: CharacterSet(charactersIn: "—-"))
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .filter { !$0.isEmpty }
+            
+            // Если городов больше 2, значит есть пересадки
+            if cities.count > 2 {
+                // Берем промежуточные города (все кроме первого и последнего)
+                let transferCities = cities.dropFirst().dropLast()
+                if !transferCities.isEmpty {
+                    let transferList = transferCities.joined(separator: ", ")
+                    return transferCities.count == 1 
+                        ? "С пересадкой в \(transferList)"
+                        : "С пересадками в \(transferList)"
+                }
+            }
+        }
+        
+        return nil
+    }
 
     private var departureTime: String {
         guard let departure = segment.departure else { return "—" }
@@ -119,10 +144,10 @@ struct RouteCard: View {
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.black)
 
-                    if !trainTitle.isEmpty {
-                        Text(trainTitle)
+                    if let transfer = transferInfo {
+                        Text(transfer)
                             .font(.system(size: 13))
-                            .foregroundStyle(.red.opacity(0.8))
+                            .foregroundStyle(.red)
                     }
                 }
 
@@ -148,7 +173,7 @@ struct RouteCard: View {
                         .font(.system(size: 13))
                         .foregroundStyle(.black.opacity(0.5))
                         .padding(.horizontal, 8)
-                        .background(Color(.systemGray6))
+                        .background(Color("LightGray"))
                 }
                 .padding(.horizontal, 12)
                 
@@ -158,7 +183,7 @@ struct RouteCard: View {
             }
         }
         .padding(16)
-        .background(Color(.systemGray6))
+        .background(Color("LightGray"))
         .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 }
