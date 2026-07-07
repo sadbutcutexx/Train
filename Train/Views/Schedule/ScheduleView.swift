@@ -39,10 +39,11 @@ struct ScheduleView: View {
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 55)
                                 .background(Color("Blue"))
-                                .foregroundStyle(Color("TextColor"))
+                                .foregroundStyle(.white)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                                 .font(.system(size: 17, weight: .bold))
                         }
+                        .padding(.horizontal, 80.5)
                     }
 
                     Spacer()
@@ -55,4 +56,5 @@ struct ScheduleView: View {
 }
 
 #Preview {
+    ScheduleView()
 }

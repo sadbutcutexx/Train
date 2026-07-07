@@ -47,22 +47,23 @@ struct CitySelectionView: View {
             VStack(spacing: 0) {
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass")
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(Color("SearchFieldTextColor"))
 
                     TextField("Введите запрос", text: $searchText)
+                        .foregroundStyle(Color("SearchFieldTextColor"))
 
                     if !searchText.isEmpty {
                         Button {
                             searchText = ""
                         } label: {
                             Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(.gray)
+                                .foregroundStyle(Color("SearchFieldTextColor"))
                         }
                     }
                 }
                 .padding(.horizontal, 12)
                 .frame(height: 36)
-                .background(Color(.systemGray6))
+                .background(Color("SearchFieldBackgroundColor"))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal, 16)
                 .padding(.top, 12)

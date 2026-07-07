@@ -87,42 +87,13 @@ struct RouteSelectionView: View {
                         Text("Рейсы не найдены")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundStyle(Color("TextColor"))
-                        
-                        Text("Попробуйте выбрать другие станции")
-                            .font(.system(size: 14))
-                            .foregroundStyle(Color("TextColor").opacity(0.7))
                     }
                     Spacer()
                 } else if viewModel.routes.isEmpty && !viewModel.alternativeRoutes.isEmpty {
                     Spacer()
-                    VStack(spacing: 16) {
-                        Image(systemName: "arrow.triangle.branch")
-                            .font(.system(size: 48))
-                            .foregroundStyle(Color("TextColor").opacity(0.7))
-                        
-                        Text("Нет прямых рейсов")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(Color("TextColor"))
-                        
-                        Text("С выбранных станций нет рейсов.\nПоезда отправляются с других станций в этих городах.")
-                            .font(.system(size: 14))
-                            .foregroundStyle(Color("TextColor").opacity(0.7))
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 32)
-                        
-                        Button {
-                            viewModel.showingAlternatives = true
-                        } label: {
-                            Text("Показать альтернативные маршруты (\(viewModel.alternativeRoutes.count))")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(Color("TextColor"))
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 12)
-                                .background(Color.blue)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                        }
-                        .padding(.top, 8)
-                    }
+                    Text("Вариантов нет")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(Color("TextColor"))
                     Spacer()
                 } else {
                     ZStack(alignment: .bottom) {
@@ -182,7 +153,7 @@ struct RouteSelectionView: View {
                         } label: {
                             Text("Уточнить время")
                                 .font(.system(size: 18, weight: .semibold))
-                                .foregroundStyle(Color("TextColor"))
+                                .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 56)
                                 .background(Color.blue)

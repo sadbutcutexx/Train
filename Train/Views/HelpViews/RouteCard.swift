@@ -17,28 +17,9 @@ struct RouteCard: View {
         segment.thread?.title ?? ""
     }
     
+    // Each segment represents a direct train journey, so we don't show transfers
+    // Transfers would only be relevant if combining multiple segments into a multi-leg journey
     private var transferInfo: String? {
-        // Проверяем название маршрута (thread.title), которое может содержать информацию о пересадках
-        // Например: "Москва — Кострома — Санкт-Петербург"
-        if let title = segment.thread?.title, !title.isEmpty {
-            // Разбираем по разделителю "—" или "-"
-            let cities = title.components(separatedBy: CharacterSet(charactersIn: "—-"))
-                .map { $0.trimmingCharacters(in: .whitespaces) }
-                .filter { !$0.isEmpty }
-            
-            // Если городов больше 2, значит есть пересадки
-            if cities.count > 2 {
-                // Берем промежуточные города (все кроме первого и последнего)
-                let transferCities = cities.dropFirst().dropLast()
-                if !transferCities.isEmpty {
-                    let transferList = transferCities.joined(separator: ", ")
-                    return transferCities.count == 1 
-                        ? "С пересадкой в \(transferList)"
-                        : "С пересадками в \(transferList)"
-                }
-            }
-        }
-        
         return nil
     }
 
