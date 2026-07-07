@@ -30,22 +30,6 @@ struct RouteFilterView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(Color("TextColor"))
-                    }
-                    
-                    Spacer()
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 16)
-                .padding(.bottom, 8)
-                
                 ScrollView {
                     VStack(alignment: .leading, spacing: 32) {
                         VStack(alignment: .leading, spacing: 16) {
@@ -136,7 +120,23 @@ struct RouteFilterView: View {
                 .background(Color("BackgroundColor"))
             }
         }
-        .presentationBackground(Color("BackgroundColor"))
+        .navigationTitle("Уточнить время")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbarBackground(Color("BackgroundColor"), for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbar(.hidden, for: .tabBar)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(Color("TextColor"))
+                }
+            }
+        }
     }
 }
 
@@ -202,5 +202,7 @@ struct RouteFilters {
 }
 
 #Preview {
-    RouteFilterView(filters: .constant(RouteFilters()))
+    NavigationStack {
+        RouteFilterView(filters: .constant(RouteFilters()))
+    }
 }

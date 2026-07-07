@@ -11,7 +11,6 @@ struct RouteSelectionView: View {
     let toStation: SelectedStation
 
     @StateObject private var viewModel: RouteSelectionViewModel
-    @State private var showFilterSheet = false
     @State private var filters = RouteFilters()
     @Environment(\.dismiss) private var dismiss
 
@@ -148,8 +147,8 @@ struct RouteSelectionView: View {
                             .padding(.bottom, 100)
                         }
                         
-                        Button {
-                            showFilterSheet = true
+                        NavigationLink {
+                            RouteFilterView(filters: $filters)
                         } label: {
                             Text("Уточнить время")
                                 .font(.system(size: 18, weight: .semibold))
@@ -159,14 +158,12 @@ struct RouteSelectionView: View {
                                 .background(Color.blue)
                                 .clipShape(RoundedRectangle(cornerRadius: 16))
                         }
+                        .buttonStyle(.plain)
                         .padding(.horizontal, 16)
                         .padding(.bottom, 20)
                     }
                 }
             }
-        }
-        .sheet(isPresented: $showFilterSheet) {
-            RouteFilterView(filters: $filters)
         }
         .toolbarBackground(Color("BackgroundColor"), for: .navigationBar)
         .toolbar(.hidden, for: .tabBar)
