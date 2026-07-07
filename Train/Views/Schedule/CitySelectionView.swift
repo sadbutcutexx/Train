@@ -187,6 +187,7 @@ struct CitySelectionView: View {
         .navigationBarBackButtonHidden(true)
         .toolbarBackground(Color("BackgroundColor"), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
+        .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
