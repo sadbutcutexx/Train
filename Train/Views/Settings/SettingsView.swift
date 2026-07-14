@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @State private var isOn = false
+    @AppStorage("isDarkMode") private var isDarkMode = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -16,11 +16,14 @@ struct SettingsView: View {
                     Text("Темная тема")
                         .font(.system(size: 17, weight: .regular))
                     Spacer()
-                    Toggle("", isOn: $isOn)
+                    Toggle("", isOn: $isDarkMode)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
-
+                
+                Divider()
+                    .padding(.leading, 16)
+                
                 HStack {
                     Text("Пользовательское соглашение")
                         .font(.system(size: 17, weight: .regular))
@@ -30,7 +33,7 @@ struct SettingsView: View {
                     }) {
                         Image(systemName: "chevron.right")
                             .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.black)
+                            .foregroundColor(isDarkMode ? .white : .black)
                     }
                 }
                 .padding(.horizontal, 16)
@@ -53,6 +56,7 @@ struct SettingsView: View {
             }
             .padding(.bottom, 24)
         }
+        .background(Color("BackgroundColor"))
     }
 }
 
