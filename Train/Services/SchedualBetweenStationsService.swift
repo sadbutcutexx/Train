@@ -5,6 +5,7 @@
 
 import OpenAPIRuntime
 import OpenAPIURLSession
+import Foundation
 
 typealias SchedualBetweenStations = Components.Schemas.Segments
 
@@ -24,50 +25,32 @@ final class SchedualBetweenStationsService: SchedualBetweenStationsServiceProtoc
     }
     
     func getSchedualBetweenStations(from: String, to: String) async throws -> SchedualBetweenStations {
-        
-        let response = try await client.getSchedualBetweenStations(query: .init(
-            apikey: apikey,
-            from: from,
-            to: to
-        ))
-        
-        return try response.ok.body.json
-    }
-}
 
-// Функция для тестового вызова API
-func testFetchSchedualBetweenStations() {
-    // Создаём Task для выполнения асинхронного кода
-    Task {
-        do {
-            // 1. Создаём экземпляр сгенерированного клиента
-            let client = Client(
-                // Используем URL сервера, также сгенерированный из openapi.yaml (если он там определён)
-                serverURL: try Servers.Server1.url(),
-                // Указываем, какой транспорт использовать для отправки запросов
-                transport: URLSessionTransport()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        
+        let dateString = formatter.string(from: Date())
+
+        print("🔍 API REQUEST:")
+        print("  from: \(from)")
+        print("  to: \(to)")
+        print("  date: \(dateString)")
+        print("  transport_types: train")
+
+        let response = try await client.getSchedualBetweenStations(
+            query: .init(
+                apikey: apikey,
+                from: from,
+                to: to,
+                date: dateString,
+                transport_types: "train"
             )
-            
-            // 2. Создаём экземпляр нашего сервиса, передавая ему клиент и API-ключ
-            let service = SchedualBetweenStationsService(
-                client: client,
-                apikey: "6a0ee87c-787b-4ba2-aa12-6616eaf14e21" // !!! ЗАМЕНИТЕ НА СВОЙ РЕАЛЬНЫЙ КЛЮЧ !!!
-            )
-            
-            // 3. Вызываем метод сервиса
-            print("Fetching schedule...")
-            let stations = try await service.getSchedualBetweenStations(
-                from: "c213",
-                to: "c14",
-            )
-            
-            // 4. Если всё успешно, печатаем результат в консоль
-            print("Successfully fetched schedule: \(stations)")
-        } catch {
-            // 5. Если произошла ошибка на любом из этапов (создание клиента, вызов сервиса, обработка ответа),
-            //    она будет поймана здесь, и мы выведем её в консоль
-            print("Error fetching schedule: \(error)")
-            // В реальном приложении здесь должна быть логика обработки ошибок (показ алерта и т. д.)
-        }
+        )
+
+        let result = try response.ok.body.json
+        
+        print("📦 API RESPONSE: \(result.segments?.count ?? 0) segments")
+
+        return result
     }
 }
