@@ -7,6 +7,7 @@ import SwiftUI
 
 struct MainView: View {
     @State private var selectedTab = 0
+    @State private var showUserAgreement = false
     @AppStorage("isDarkMode") private var isDarkMode = false
 
     init() {
@@ -22,7 +23,7 @@ struct MainView: View {
                 }
                 .tag(0)
 
-            SettingsView()
+            SettingsView(showUserAgreement: $showUserAgreement)
                 .tabItem {
                     Image("SettingsTabItemEnabled")
                         .renderingMode(.template)
@@ -31,6 +32,11 @@ struct MainView: View {
         }
         .tint(isDarkMode ? .white : .black)
         .preferredColorScheme(isDarkMode ? .dark : .light)
+        .fullScreenCover(isPresented: $showUserAgreement) {
+            NavigationStack {
+                UserAgreementView()
+            }
+        }
     }
 }
 

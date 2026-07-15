@@ -6,6 +6,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Binding var showUserAgreement: Bool
     @AppStorage("isDarkMode") private var isDarkMode = false
     
     var body: some View {
@@ -25,7 +26,9 @@ struct SettingsView: View {
                     Divider()
                         .padding(.leading, 16)
                     
-                    NavigationLink(destination: UserAgreementView()) {
+                    Button {
+                        showUserAgreement = true
+                    } label: {
                         HStack {
                             Text("Пользовательское соглашение")
                                 .font(.system(size: 17, weight: .regular))
@@ -62,5 +65,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
+    SettingsView(showUserAgreement: .constant(false))
 }
