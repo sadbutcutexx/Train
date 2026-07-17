@@ -97,75 +97,82 @@ struct RouteCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .center, spacing: 12) {
-                if let logoURL = segment.thread?.carrier?.logo {
-                    AsyncImage(url: URL(string: logoURL)) { image in
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 40, height: 40)
-                    } placeholder: {
+        NavigationLink(destination: {
+            if let carrier = segment.thread?.carrier {
+                CarrierInfoView(carrier: carrier)
+            }
+        }) {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .center, spacing: 12) {
+                    if let logoURL = segment.thread?.carrier?.logo {
+                        AsyncImage(url: URL(string: logoURL)) { image in
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 40)
+                        } placeholder: {
+                            Image(systemName: "train.side.front.car")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 40)
+                                .foregroundStyle(.red)
+                        }
+                    } else {
                         Image(systemName: "train.side.front.car")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 40, height: 40)
                             .foregroundStyle(.red)
                     }
-                } else {
-                    Image(systemName: "train.side.front.car")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40, height: 40)
-                        .foregroundStyle(.red)
-                }
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(carrierTitle)
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(.black)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(carrierTitle)
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(.black)
 
-                    if let transfer = transferInfo {
-                        Text(transfer)
-                            .font(.system(size: 13))
-                            .foregroundStyle(.red)
+                        if let transfer = transferInfo {
+                            Text(transfer)
+                                .font(.system(size: 13))
+                                .foregroundStyle(.red)
+                        }
                     }
-                }
 
-                Spacer()
+                    Spacer()
 
-                Text(dateText)
-                    .font(.system(size: 15))
-                    .foregroundStyle(.black.opacity(0.5))
-            }
-            .padding(.bottom, 16)
-
-            HStack(alignment: .center, spacing: 0) {
-                Text(departureTime)
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundStyle(.black)
-                
-                ZStack {
-                    Rectangle()
-                        .fill(Color.black.opacity(0.2))
-                        .frame(height: 1)
-                    
-                    Text(durationText)
-                        .font(.system(size: 13))
+                    Text(dateText)
+                        .font(.system(size: 15))
                         .foregroundStyle(.black.opacity(0.5))
-                        .padding(.horizontal, 8)
-                        .background(Color("LightGray"))
                 }
-                .padding(.horizontal, 12)
-                
-                Text(arrivalTime)
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundStyle(.black)
+                .padding(.bottom, 16)
+
+                HStack(alignment: .center, spacing: 0) {
+                    Text(departureTime)
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundStyle(.black)
+                    
+                    ZStack {
+                        Rectangle()
+                            .fill(Color.black.opacity(0.2))
+                            .frame(height: 1)
+                        
+                        Text(durationText)
+                            .font(.system(size: 13))
+                            .foregroundStyle(.black.opacity(0.5))
+                            .padding(.horizontal, 8)
+                            .background(Color("LightGray"))
+                    }
+                    .padding(.horizontal, 12)
+                    
+                    Text(arrivalTime)
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundStyle(.black)
+                }
             }
+            .padding(16)
+            .background(Color("LightGray"))
+            .clipShape(RoundedRectangle(cornerRadius: 20))
         }
-        .padding(16)
-        .background(Color("LightGray"))
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .buttonStyle(.plain)
     }
 }
 
