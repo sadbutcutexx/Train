@@ -3,31 +3,25 @@
 //  Train
 //
 
-import OpenAPIRuntime
-import OpenAPIURLSession
+import Foundation
 
 typealias CarrierInfo = Components.Schemas.CarrierResponse
 
-protocol CarrierInfoServiceProtocol {
+protocol CarrierInfoServiceProtocol: Sendable {
     func getCarrierInfo(code: String, system: String) async throws -> CarrierInfo
 }
 
-final class CarrierInfoService: CarrierInfoServiceProtocol {
-
-    private let client: Client
-    private let apiKey: String
-
-    init(client: Client, apikey: String) {
-        self.client = client
-        self.apiKey = apikey
+/// Сервис для получения информации о перевозчике
+/// Делегирует сетевые запросы актору NetworkClient для предотвращения data races
+final class CarrierInfoService: CarrierInfoServiceProtocol, Sendable {
+    
+    private let networkClient: NetworkClient
+    
+    init(networkClient: NetworkClient) {
+        self.networkClient = networkClient
     }
-
+    
     func getCarrierInfo(code: String, system: String) async throws -> CarrierInfo {
-        let response = try await client.getCarrierInfo(query: .init(
-            apikey: apiKey,
-            code: code,
-            system: system
-        ))
-        return try response.ok.body.json
+        return try await networkClient.getCarrierInfo(code: code, system: system)
     }
 }

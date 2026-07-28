@@ -45,7 +45,6 @@ struct CarrierInfoView: View {
                             .foregroundColor(.primary)
                         
                         Button {
-                            viewModel.sendEmail()
                         } label: {
                             Text(email)
                                 .font(.system(size: 17, weight: .regular))
@@ -61,7 +60,6 @@ struct CarrierInfoView: View {
                             .foregroundColor(.primary)
                         
                         Button {
-                            viewModel.makePhoneCall()
                         } label: {
                             Text(phone)
                                 .font(.system(size: 17, weight: .regular))

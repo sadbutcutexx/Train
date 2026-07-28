@@ -1,56 +1,27 @@
 //
-//  Untitled.swift
+//  SchedualBetweenStationsService.swift
 //  Train
 //
 
-import OpenAPIRuntime
-import OpenAPIURLSession
 import Foundation
 
 typealias SchedualBetweenStations = Components.Schemas.Segments
 
-protocol SchedualBetweenStationsServiceProtocol {
-    
+protocol SchedualBetweenStationsServiceProtocol: Sendable {
     func getSchedualBetweenStations(from: String, to: String) async throws -> SchedualBetweenStations
 }
 
-final class SchedualBetweenStationsService: SchedualBetweenStationsServiceProtocol {
+/// Сервис для получения расписания между станциями
+/// Делегирует сетевые запросы актору NetworkClient для предотвращения data races
+final class SchedualBetweenStationsService: SchedualBetweenStationsServiceProtocol, Sendable {
     
-    private let client: Client
-    private let apikey: String
+    private let networkClient: NetworkClient
     
-    init(client: Client, apikey: String) {
-        self.client = client
-        self.apikey = apikey
+    init(networkClient: NetworkClient) {
+        self.networkClient = networkClient
     }
     
     func getSchedualBetweenStations(from: String, to: String) async throws -> SchedualBetweenStations {
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        
-        let dateString = formatter.string(from: Date())
-
-        print("🔍 API REQUEST:")
-        print("  from: \(from)")
-        print("  to: \(to)")
-        print("  date: \(dateString)")
-        print("  transport_types: train")
-
-        let response = try await client.getSchedualBetweenStations(
-            query: .init(
-                apikey: apikey,
-                from: from,
-                to: to,
-                date: dateString,
-                transport_types: "train"
-            )
-        )
-
-        let result = try response.ok.body.json
-        
-        print("📦 API RESPONSE: \(result.segments?.count ?? 0) segments")
-
-        return result
+        return try await networkClient.getScheduleBetweenStations(from: from, to: to)
     }
 }
