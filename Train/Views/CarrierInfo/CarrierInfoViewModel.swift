@@ -38,31 +38,4 @@ final class CarrierInfoViewModel: ObservableObject {
     var hasContactInfo: Bool {
         displayEmail != nil || displayPhone != nil
     }
-    
-    func makePhoneCall() {
-        guard let phone = displayPhone else { return }
-        let cleanPhone = phone.replacingOccurrences(of: " ", with: "")
-            .replacingOccurrences(of: "(", with: "")
-            .replacingOccurrences(of: ")", with: "")
-            .replacingOccurrences(of: "-", with: "")
-        
-        if let url = URL(string: "tel:\(cleanPhone)") {
-            #if !targetEnvironment(simulator)
-            if UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url)
-            }
-            #else
-            print("Phone call not available in simulator: \(cleanPhone)")
-            #endif
-        }
-    }
-    
-    func sendEmail() {
-        guard let email = displayEmail else { return }
-        if let url = URL(string: "mailto:\(email)") {
-            if UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url)
-            }
-        }
-    }
 }

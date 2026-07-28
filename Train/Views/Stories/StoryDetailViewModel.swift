@@ -71,7 +71,7 @@ final class StoryDetailViewModel: ObservableObject {
         progress = 0
     }
     
-    func handleIndexChange(oldValue: Int, newValue: Int) {
+    func handleIndexChange(oldValue: Int, newValue: Int) async {
         print("Story changed to index: \(newValue), isAuto: \(isAutoTransition)")
         
         if isAutoTransition {
@@ -83,9 +83,8 @@ final class StoryDetailViewModel: ObservableObject {
         stopTimer()
         markAsViewed(index: newValue)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            self?.startTimer()
-        }
+        try? await Task.sleep(for: .milliseconds(100))
+        startTimer()
     }
     
     func shouldDismiss() -> Bool {

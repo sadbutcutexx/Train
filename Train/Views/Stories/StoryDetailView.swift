@@ -35,7 +35,9 @@ struct StoryDetailView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .ignoresSafeArea()
                 .onChange(of: viewModel.currentIndex) { oldValue, newValue in
-                    viewModel.handleIndexChange(oldValue: oldValue, newValue: newValue)
+                    Task {
+                        await viewModel.handleIndexChange(oldValue: oldValue, newValue: newValue)
+                    }
                 }
                 
                 VStack(spacing: 0) {
