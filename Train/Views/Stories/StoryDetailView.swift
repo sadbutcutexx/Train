@@ -11,17 +11,12 @@ struct StoryDetailView: View {
     @Binding var stories: [Story]
     let startIndex: Int
     
-    @State private var currentIndex: Int
-    @State private var progress: Double = 0
-    @State private var timerSubscription: AnyCancellable?
-    @State private var isAutoTransition = false
-    
-    private let storyDuration: Double = 5.0
+    @StateObject private var viewModel: StoryDetailViewModel
     
     init(stories: Binding<[Story]>, startIndex: Int) {
         self._stories = stories
         self.startIndex = startIndex
-        self._currentIndex = State(initialValue: startIndex)
+        self._viewModel = StateObject(wrappedValue: StoryDetailViewModel(stories: stories, startIndex: startIndex))
         print("StoryDetailView init with startIndex: \(startIndex)")
     }
     
@@ -31,7 +26,7 @@ struct StoryDetailView: View {
                 Color.black
                     .ignoresSafeArea()
                 
-                TabView(selection: $currentIndex) {
+                TabView(selection: $viewModel.currentIndex) {
                     ForEach(stories.indices, id: \.self) { index in
                         storyContentView(for: stories[index], geometry: geometry)
                             .tag(index)
@@ -39,28 +34,16 @@ struct StoryDetailView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .ignoresSafeArea()
-                .onChange(of: currentIndex) { oldValue, newValue in
-                    print("Story changed to index: \(newValue), isAuto: \(isAutoTransition)")
-                    
-                    if isAutoTransition {
-                        isAutoTransition = false
-                    } else {
-                        progress = 0
-                    }
-                    
-                    stopTimer()
-                    markAsViewed(index: newValue)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        startTimer()
-                    }
+                .onChange(of: viewModel.currentIndex) { oldValue, newValue in
+                    viewModel.handleIndexChange(oldValue: oldValue, newValue: newValue)
                 }
                 
                 VStack(spacing: 0) {
                     HStack(spacing: 12) {
                         StoryProgressBar(
                             segmentCount: stories.count,
-                            currentIndex: currentIndex,
-                            progress: progress
+                            currentIndex: viewModel.currentIndex,
+                            progress: viewModel.progress
                         )
                         .frame(height: 4)
                     }
@@ -71,7 +54,7 @@ struct StoryDetailView: View {
                         Spacer()
                         Button(action: {
                             print("Close button tapped")
-                            stopTimer()
+                            viewModel.stopTimer()
                             dismiss()
                         }) {
                             Image(systemName: "xmark")
@@ -94,13 +77,18 @@ struct StoryDetailView: View {
                     Color.clear
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            previousStory()
+                            viewModel.moveToPreviousStory()
                         }
                     
                     Color.clear
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            nextStory()
+                            if viewModel.shouldDismiss() {
+                                viewModel.stopTimer()
+                                dismiss()
+                            } else {
+                                viewModel.moveToNextStory()
+                            }
                         }
                 }
                 .zIndex(1)
@@ -110,21 +98,26 @@ struct StoryDetailView: View {
             DragGesture(minimumDistance: 50)
                 .onEnded { value in
                     if value.translation.width < -50 {
-                        nextStory()
+                        if viewModel.shouldDismiss() {
+                            viewModel.stopTimer()
+                            dismiss()
+                        } else {
+                            viewModel.moveToNextStory()
+                        }
                     } else if value.translation.width > 50 {
-                        previousStory()
+                        viewModel.moveToPreviousStory()
                     }
                 }
         )
         .statusBarHidden(true)
         .onAppear {
             print("StoryDetailView appeared")
-            markAsViewed(index: currentIndex)
-            startTimer()
+            viewModel.markAsViewed(index: viewModel.currentIndex)
+            viewModel.startTimer()
         }
         .onDisappear {
             print("StoryDetailView disappeared")
-            stopTimer()
+            viewModel.stopTimer()
         }
     }
     
@@ -172,52 +165,6 @@ struct StoryDetailView: View {
         }
         .clipShape(RoundedRectangle(cornerRadius: 24))
         .padding(.horizontal, 8)
-    }
-    
-    private func startTimer() {
-        print("Timer started")
-        let timer = Timer.publish(every: 0.1, on: .main, in: .common)
-        
-        timerSubscription = timer
-            .autoconnect()
-            .sink { [self] _ in
-                progress += 0.1 / storyDuration
-                
-                if progress >= 0.99 {
-                    progress = 0
-                    isAutoTransition = true
-                    nextStory()
-                }
-            }
-    }
-    
-    private func stopTimer() {
-        print("Timer stopped")
-        timerSubscription?.cancel()
-        timerSubscription = nil
-    }
-    
-    private func nextStory() {
-        print("Next story from \(currentIndex)")
-        if currentIndex < stories.count - 1 {
-            currentIndex += 1
-        } else {
-            print("Reached end, dismissing")
-            stopTimer()
-            dismiss()
-        }
-    }
-    
-    private func previousStory() {
-        print("Previous story from \(currentIndex)")
-        if currentIndex > 0 {
-            currentIndex -= 1
-        }
-    }
-    
-    private func markAsViewed(index: Int) {
-        stories[index].isViewed = true
-        print("Marked story \(index) as viewed")
     }
 }
 

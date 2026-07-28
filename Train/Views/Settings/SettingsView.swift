@@ -7,18 +7,17 @@ import SwiftUI
 
 struct SettingsView: View {
     @Binding var showUserAgreement: Bool
-    @AppStorage("isDarkMode") private var isDarkMode = false
+    @StateObject private var viewModel = SettingsViewModel()
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Settings rows at the top
                 VStack(spacing: 0) {
                     HStack {
                         Text("Темная тема")
                             .font(.system(size: 17, weight: .regular))
                         Spacer()
-                        Toggle("", isOn: $isDarkMode)
+                        Toggle("", isOn: $viewModel.isDarkMode)
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 16)
@@ -32,11 +31,11 @@ struct SettingsView: View {
                         HStack {
                             Text("Пользовательское соглашение")
                                 .font(.system(size: 17, weight: .regular))
-                                .foregroundColor(isDarkMode ? .white : .black)
+                                .foregroundColor(viewModel.isDarkMode ? .white : .black)
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(isDarkMode ? .white : .black)
+                                .foregroundColor(viewModel.isDarkMode ? .white : .black)
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 16)
@@ -46,14 +45,13 @@ struct SettingsView: View {
                 
                 Spacer()
                 
-                // Footer at the bottom
                 VStack(spacing: 4) {
-                    Text("Приложение использует API «Яндекс.Расписания»")
+                    Text(viewModel.apiProvider)
                         .font(.system(size: 12, weight: .regular))
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                     
-                    Text("Версия 1.0 (beta)")
+                    Text("Версия \(viewModel.appVersion)")
                         .font(.system(size: 12, weight: .regular))
                         .foregroundColor(.secondary)
                 }

@@ -7,11 +7,18 @@ import SwiftUI
 
 struct CarrierInfoView: View {
     @Environment(\.dismiss) private var dismiss
-    let carrier: Components.Schemas.Carrier
+    @StateObject private var viewModel: CarrierInfoViewModel
+    
+    init(carrier: Components.Schemas.Carrier) {
+        self._viewModel = StateObject(wrappedValue: CarrierInfoViewModel(
+            carrier: carrier,
+            service: AppContainer.shared.carrierInfoService
+        ))
+    }
     
     var body: some View {
         VStack(spacing: 0) {
-            if let logoURL = carrier.logo, let url = URL(string: logoURL) {
+            if let logoURL = viewModel.displayLogo, let url = URL(string: logoURL) {
                 AsyncImage(url: url) { image in
                     image
                         .resizable()
@@ -28,33 +35,46 @@ struct CarrierInfoView: View {
             }
             
             VStack(alignment: .leading, spacing: 24) {
-                if let title = carrier.title {
-                    Text(title)
-                        .font(.system(size: 24, weight: .bold))
-                }
+                Text(viewModel.displayTitle)
+                    .font(.system(size: 24, weight: .bold))
                 
-                if let email = carrier.email {
+                if let email = viewModel.displayEmail {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("E-mail")
                             .font(.system(size: 17, weight: .regular))
                             .foregroundColor(.primary)
                         
-                        Link(email, destination: URL(string: "mailto:\(email)")!)
-                            .font(.system(size: 17, weight: .regular))
-                            .foregroundColor(.blue)
+                        Button {
+                            viewModel.sendEmail()
+                        } label: {
+                            Text(email)
+                                .font(.system(size: 17, weight: .regular))
+                                .foregroundColor(.blue)
+                        }
                     }
                 }
                 
-                if let phone = carrier.phone {
+                if let phone = viewModel.displayPhone {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Телефон")
                             .font(.system(size: 17, weight: .regular))
                             .foregroundColor(.primary)
                         
-                        Link(phone, destination: URL(string: "tel:\(phone.replacingOccurrences(of: " ", with: ""))")!)
-                            .font(.system(size: 17, weight: .regular))
-                            .foregroundColor(.blue)
+                        Button {
+                            viewModel.makePhoneCall()
+                        } label: {
+                            Text(phone)
+                                .font(.system(size: 17, weight: .regular))
+                                .foregroundColor(.blue)
+                        }
                     }
+                }
+                
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .font(.system(size: 14))
+                        .foregroundColor(.red)
+                        .padding(.top, 8)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -80,6 +100,14 @@ struct CarrierInfoView: View {
                     }
                     .foregroundColor(Color("TextColor"))
                 }
+            }
+        }
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+                    .scaleEffect(1.5)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black.opacity(0.3))
             }
         }
     }

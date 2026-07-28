@@ -7,10 +7,7 @@ import SwiftUI
 
 struct ScheduleView: View {
 
-    @State private var fromStation: SelectedStation?
-    @State private var toStation: SelectedStation?
-
-    private let service = AppContainer.shared.schedualBetweenStationsService
+    @StateObject private var viewModel = ScheduleViewModel()
 
     var body: some View {
         NavigationStack {
@@ -24,15 +21,15 @@ struct ScheduleView: View {
                         .padding(.bottom, 44)
 
                     SearchCard(
-                        fromStation: $fromStation,
-                        toStation: $toStation
+                        fromStation: $viewModel.fromStation,
+                        toStation: $viewModel.toStation
                     )
 
-                    if let fromStation, let toStation {
+                    if viewModel.canSearch() {
                         NavigationLink {
                             RouteSelectionView(
-                                fromStation: fromStation,
-                                toStation: toStation
+                                fromStation: viewModel.fromStation!,
+                                toStation: viewModel.toStation!
                             )
                         } label: {
                             Text("Найти")

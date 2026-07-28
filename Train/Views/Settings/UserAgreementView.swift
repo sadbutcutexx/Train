@@ -7,7 +7,7 @@ import SwiftUI
 
 struct UserAgreementView: View {
     @Environment(\.dismiss) private var dismiss
-    @AppStorage("isDarkMode") private var isDarkMode = false
+    @StateObject private var viewModel = UserAgreementViewModel()
     
     var body: some View {
         ScrollView {
@@ -16,7 +16,7 @@ struct UserAgreementView: View {
                     .font(.system(size: 24, weight: .bold))
                     .padding(.top, 8)
                 
-                Text("Данный документ является действующим, если расположен по адресу: https://yandex.ru/legal/practicum_offer")
+                Text("Данный документ является действующим, если расположен по адресу: \(viewModel.agreementURL)")
                     .font(.system(size: 17, weight: .regular))
                 
                 Text("Российская Федерация, город Москва")
@@ -52,13 +52,13 @@ struct UserAgreementView: View {
                             .font(.system(size: 17, weight: .semibold))
                         Text("")
                     }
-                    .foregroundColor(isDarkMode ? .white : .black)
+                    .foregroundColor(viewModel.isDarkMode ? .white : .black)
                 }
             }
         }
         .toolbarBackground(Color("BackgroundColor"), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarColorScheme(isDarkMode ? .dark : .light, for: .navigationBar)
+        .toolbarColorScheme(viewModel.isDarkMode ? .dark : .light, for: .navigationBar)
     }
 }
 

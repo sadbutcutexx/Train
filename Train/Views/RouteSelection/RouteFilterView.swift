@@ -9,19 +9,11 @@ struct RouteFilterView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var filters: RouteFilters
     
-    @State private var morningSelected: Bool
-    @State private var daySelected: Bool
-    @State private var eveningSelected: Bool
-    @State private var nightSelected: Bool
-    @State private var showTransfers: Bool
+    @StateObject private var viewModel: RouteFilterViewModel
     
     init(filters: Binding<RouteFilters>) {
         self._filters = filters
-        self._morningSelected = State(initialValue: filters.wrappedValue.morningSelected)
-        self._daySelected = State(initialValue: filters.wrappedValue.daySelected)
-        self._eveningSelected = State(initialValue: filters.wrappedValue.eveningSelected)
-        self._nightSelected = State(initialValue: filters.wrappedValue.nightSelected)
-        self._showTransfers = State(initialValue: filters.wrappedValue.showTransfers)
+        self._viewModel = StateObject(wrappedValue: RouteFilterViewModel(filters: filters.wrappedValue))
     }
     
     var body: some View {
@@ -40,7 +32,7 @@ struct RouteFilterView: View {
                             VStack(spacing: 0) {
                                 TimeRangeRow(
                                     title: "Утро 06:00 - 12:00",
-                                    isSelected: $morningSelected
+                                    isSelected: $viewModel.morningSelected
                                 )
                                 
                                 Divider()
@@ -48,7 +40,7 @@ struct RouteFilterView: View {
                                 
                                 TimeRangeRow(
                                     title: "День 12:00 - 18:00",
-                                    isSelected: $daySelected
+                                    isSelected: $viewModel.daySelected
                                 )
                                 
                                 Divider()
@@ -56,7 +48,7 @@ struct RouteFilterView: View {
                                 
                                 TimeRangeRow(
                                     title: "Вечер 18:00 - 00:00",
-                                    isSelected: $eveningSelected
+                                    isSelected: $viewModel.eveningSelected
                                 )
                                 
                                 Divider()
@@ -64,7 +56,7 @@ struct RouteFilterView: View {
                                 
                                 TimeRangeRow(
                                     title: "Ночь 00:00 - 06:00",
-                                    isSelected: $nightSelected
+                                    isSelected: $viewModel.nightSelected
                                 )
                             }
                         }
@@ -77,8 +69,8 @@ struct RouteFilterView: View {
                             VStack(spacing: 0) {
                                 TransferOptionRow(
                                     title: "Да",
-                                    isSelected: showTransfers,
-                                    onTap: { showTransfers = true }
+                                    isSelected: viewModel.showTransfers,
+                                    onTap: { viewModel.setShowTransfers(true) }
                                 )
                                 
                                 Divider()
@@ -86,8 +78,8 @@ struct RouteFilterView: View {
                                 
                                 TransferOptionRow(
                                     title: "Нет",
-                                    isSelected: !showTransfers,
-                                    onTap: { showTransfers = false }
+                                    isSelected: !viewModel.showTransfers,
+                                    onTap: { viewModel.setShowTransfers(false) }
                                 )
                             }
                         }
@@ -98,13 +90,7 @@ struct RouteFilterView: View {
                 }
                 
                 Button {
-                    filters = RouteFilters(
-                        morningSelected: morningSelected,
-                        daySelected: daySelected,
-                        eveningSelected: eveningSelected,
-                        nightSelected: nightSelected,
-                        showTransfers: showTransfers
-                    )
+                    filters = viewModel.getCurrentFilters()
                     dismiss()
                 } label: {
                     Text("Применить")

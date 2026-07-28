@@ -13,6 +13,7 @@ final class AppContainer {
 
     let allStationsService: AllStationsServiceProtocol
     let schedualBetweenStationsService: SchedualBetweenStationsServiceProtocol
+    let carrierInfoService: CarrierInfoServiceProtocol
 
     private init() {
 
@@ -21,14 +22,21 @@ final class AppContainer {
             transport: URLSessionTransport()
         )
 
+        let apiKey = "6a0ee87c-787b-4ba2-aa12-6616eaf14e21"
+
         allStationsService = AllStationsService(
             client: client,
-            apikey: "6a0ee87c-787b-4ba2-aa12-6616eaf14e21"
+            apikey: apiKey
         )
         
         schedualBetweenStationsService = SchedualBetweenStationsService(
             client: client,
-            apikey: "6a0ee87c-787b-4ba2-aa12-6616eaf14e21"
+            apikey: apiKey
+        )
+        
+        carrierInfoService = CarrierInfoService(
+            client: client,
+            apikey: apiKey
         )
     }
 }
