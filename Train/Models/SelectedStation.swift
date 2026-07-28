@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct SelectedStation {
+struct SelectedStation: Sendable {
     let title: String        // "Москва (Ярославский вокзал)" — для отображения
     let stationTitle: String // "Ярославский вокзал" — оригинальное название
     let code: String         // код станции
